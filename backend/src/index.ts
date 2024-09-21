@@ -1,6 +1,12 @@
 import { Hono } from 'hono';
-import { PrismaClient } from '@prisma/client/edge';
-import { withAccelerate } from '@prisma/extension-accelerate';
+import {
+  addBlogs,
+  getBlogById,
+  getBlogs,
+  updateBlogs,
+  userSignin,
+  userSignup,
+} from './controllers';
 
 const app = new Hono<{
   Bindings: {
@@ -16,31 +22,16 @@ app.get('/health', (c) => {
   return c.json({ message: 'Server is healthy' });
 });
 
-app.post('/api/v1/signup', (c) => {
-  const { user } = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-  return c.json({ message: 'Signup route' });
-});
+app.post('/api/v1/signup', userSignup);
 
-app.post('/api/v1/signin', (c) => {
-  return c.json({ message: 'Signin route' });
-});
+app.post('/api/v1/signin', userSignin);
 
-app.post('/api/v1/blog', (c) => {
-  return c.json({ message: 'Blog Post Route' });
-});
+app.post('/api/v1/blog', addBlogs);
 
-app.put('/api/v1/blog', (c) => {
-  return c.json({ message: 'Blog Put Route' });
-});
+app.put('/api/v1/blog', updateBlogs);
 
-app.get('/api/v1/blog', (c) => {
-  return c.json({ message: 'Blog Get Route' });
-});
+app.get('/api/v1/blog', getBlogs);
 
-app.get('/api/v1/blog/:id', (c) => {
-  return c.json({ message: 'Blog Id Get Route' });
-});
+app.get('/api/v1/blog/:id', getBlogById);
 
 export default app;
