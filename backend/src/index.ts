@@ -7,6 +7,7 @@ import {
   userSignin,
   userSignup,
 } from './controllers';
+import { vaildateToken } from './middlewares/auth';
 
 const app = new Hono<{
   Bindings: {
@@ -27,12 +28,12 @@ app.post('/api/v1/signup', userSignup);
 
 app.post('/api/v1/signin', userSignin);
 
-app.post('/api/v1/blog', addBlogs);
+app.post('/api/v1/blog', vaildateToken, addBlogs);
 
-app.put('/api/v1/blog', updateBlogs);
+app.put('/api/v1/blog', vaildateToken, updateBlogs);
 
-app.get('/api/v1/blog', getBlogs);
+app.get('/api/v1/blog', vaildateToken, getBlogs);
 
-app.get('/api/v1/blog/:id', getBlogById);
+app.get('/api/v1/blog/:id', vaildateToken, getBlogById);
 
 export default app;
