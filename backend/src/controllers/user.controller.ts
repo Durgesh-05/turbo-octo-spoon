@@ -4,6 +4,7 @@ import { sign } from 'hono/jwt';
 import { setCookie } from 'hono/cookie';
 import { ApiError } from '../utils/apiError';
 import { Context } from 'hono';
+import { siginInput, signupInput } from '@dragon_18/medium-common';
 
 const generateAccessToken = async (
   id: string,
@@ -18,7 +19,10 @@ export const userSignup = async (c: Context): Promise<Response> => {
   try {
     const prisma = await initPrisma(c);
     const body = await c.req.json();
-
+    const { success, error } = signupInput.safeParse(body);
+    if (!success) {
+      return c.json(new ApiResponse(error, 'Invalid Input', 400));
+    }
     const existingUser = await prisma.user.findUnique({
       where: {
         email: body.email,
@@ -59,7 +63,10 @@ export const userSignin = async (c: Context): Promise<Response> => {
   const prisma = await initPrisma(c);
   try {
     const body = await c.req.json();
-
+    const { success, error } = siginInput.safeParse(body);
+    if (!success) {
+      return c.json(new ApiResponse(error, 'Invalid Input', 400));
+    }
     const user = await prisma.user.findUnique({
       where: {
         email: body.email,
