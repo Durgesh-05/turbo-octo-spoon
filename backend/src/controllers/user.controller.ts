@@ -21,7 +21,7 @@ export const userSignup = async (c: Context): Promise<Response> => {
     const body = await c.req.json();
     const { success, error } = signupInput.safeParse(body);
     if (!success) {
-      return c.json(new ApiResponse(error, 'Invalid Input', 400));
+      return c.json(new ApiResponse(error, 'Invalid Input', 400), 400);
     }
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -30,7 +30,7 @@ export const userSignup = async (c: Context): Promise<Response> => {
     });
 
     if (existingUser) {
-      return c.json(new ApiResponse(null, 'User already exists', 409));
+      return c.json(new ApiResponse(null, 'User already exists', 409), 409);
     }
 
     const user = await prisma.user.create({
@@ -51,11 +51,12 @@ export const userSignup = async (c: Context): Promise<Response> => {
         },
         'User Registered Successfully',
         201
-      )
+      ),
+      201
     );
   } catch (e) {
     console.error('Failed to Signup User ', e);
-    return c.json(new ApiError('Internal Server Error', 500));
+    return c.json(new ApiError('Internal Server Error', 500), 500);
   }
 };
 
@@ -65,7 +66,7 @@ export const userSignin = async (c: Context): Promise<Response> => {
     const body = await c.req.json();
     const { success, error } = siginInput.safeParse(body);
     if (!success) {
-      return c.json(new ApiResponse(error, 'Invalid Input', 400));
+      return c.json(new ApiResponse(error, 'Invalid Input', 400), 400);
     }
     const user = await prisma.user.findUnique({
       where: {
@@ -73,12 +74,12 @@ export const userSignin = async (c: Context): Promise<Response> => {
       },
     });
     if (!user) {
-      return c.json(new ApiResponse(null, 'User not found', 404));
+      return c.json(new ApiResponse(null, 'User not found', 404), 404);
     }
 
     const isPasswordValid = user.password === body.password;
     if (!isPasswordValid) {
-      return c.json(new ApiResponse(null, 'Invalid password', 401));
+      return c.json(new ApiResponse(null, 'Invalid password', 401), 401);
     }
 
     const accessToken = await generateAccessToken(
@@ -105,10 +106,11 @@ export const userSignin = async (c: Context): Promise<Response> => {
         },
         'User LoggedIn Successfully',
         200
-      )
+      ),
+      200
     );
   } catch (e) {
     console.error('Failed to Signin User ', e);
-    return c.json(new ApiError('Internal Server Error', 500));
+    return c.json(new ApiError('Internal Server Error', 500), 500);
   }
 };
