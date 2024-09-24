@@ -7,31 +7,43 @@ import {
   FaComments,
 } from 'react-icons/fa';
 import { useState } from 'react';
+import { formattedTime } from '../api/utils';
 
-export const BlogCard = () => {
+interface BlogCardProps {
+  name: string;
+  title: string;
+  description: string;
+  createdAt: string;
+}
+export const BlogCard = ({
+  title,
+  description,
+  name,
+  createdAt,
+}: BlogCardProps) => {
   const [isBookmarked, setBookmarked] = useState(false);
   const [isHearted, setHearted] = useState(false);
   const [isCommented, setCommented] = useState(false);
 
   return (
-    <div className='flex flex-col w-full gap-4 justify-between mt-6 mx-auto px-4 md:px-0 md:w-4/5 lg:w-2/3'>
+    <div className='flex flex-col w-full gap-4 justify-between mt-6 mx-auto px-4 md:px-0 md:w-[55%] '>
       <div className='flex flex-row w-full gap-4'>
         <div className='flex-1'>
           <div className='flex gap-2 items-center'>
+            <Avatar name='DD' />
             <p className='text-base md:text-lg font-normal text-gray-950'>
-              Durgesh Dubey
+              {name}
             </p>
-            <p className='text-sm font-normal text-gray-500'>Time</p>
+            <p className='text-sm font-normal text-gray-500'>
+              {formattedTime(createdAt)}
+            </p>
           </div>
           <div className='flex flex-col gap-y-4 mt-2'>
-            <h3 className='text-xl md:text-2xl lg:text-3xl font-bold'>
-              Heading of the Title
+            <h3 className='text-xl md:text-2xl lg:text-4xl font-extrabold text-gray-950'>
+              {title}
             </h3>
             <p className='text-sm md:text-base lg:text-lg text-gray-900 line-clamp-2 md:line-clamp-3 lg:line-clamp-4'>
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eos
-              consequatur neque hic accusantium asperiores molestiae, mollitia
-              laudantium odit nam, vitae ipsam distinctio, quasi officia!
-              Eveniet minus unde repudiandae consequatur soluta!
+              {description}
             </p>
           </div>
 
@@ -76,6 +88,16 @@ export const BlogCard = () => {
           />
         </div>
       </div>
+    </div>
+  );
+};
+
+export const Avatar = ({ name }: { name: string }) => {
+  return (
+    <div className=' inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-200'>
+      <span className='font-medium text-gray-900 dark:text-gray-900 text-xs'>
+        {name}
+      </span>
     </div>
   );
 };

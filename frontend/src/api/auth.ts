@@ -1,6 +1,14 @@
 import { SigninInput, SignupInput } from '@dragon_18/medium-common';
 import axios from 'axios';
-import { BACKEND_URL } from './constant';
+import { BACKEND_URL } from './utils';
+
+export interface LoginDataProps {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  accessToken: string;
+}
 export const userRegistration = async ({
   name,
   email,
@@ -14,7 +22,7 @@ export const userRegistration = async ({
     });
 
     if (res.status === 201) {
-      const { data } = res.data;
+      const data: LoginDataProps = res.data.data;
       return data;
     }
     return null;
@@ -27,7 +35,7 @@ export const userRegistration = async ({
 export const userLogin = async ({
   email,
   password,
-}: SigninInput): Promise<object | null> => {
+}: SigninInput): Promise<LoginDataProps | null> => {
   try {
     const res = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, {
       email,
