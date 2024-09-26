@@ -9,18 +9,21 @@ export const vaildateToken = async (c: Context, next: Next) => {
     const payload =
       c.req.header('authorization')?.split(' ')[1] || getCookie(c, 'token');
     if (!payload) {
-      return c.json(new ApiResponse(null, 'Missing Authorization Header', 401));
+      return c.json(
+        new ApiResponse(null, 'Missing Authorization Header', 401),
+        401
+      );
     }
 
     const isTokenValid = await verify(payload, c.env.JWT_SECRET);
     if (!isTokenValid) {
-      return c.json(new ApiResponse(null, 'Invalid token', 401));
+      return c.json(new ApiResponse(null, 'Invalid token', 401), 401);
     }
     const decodedPayload = decode(payload);
     c.set('user', decodedPayload.payload);
     await next();
   } catch (e) {
     console.error('Failed to validate token', e);
-    return c.json(new ApiError('Internal Server Error', 500));
+    return c.json(new ApiError('Internal Server Error', 500), 500);
   }
 };

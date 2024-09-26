@@ -129,3 +129,114 @@ export const getBlogById = async (c: Context): Promise<Response> => {
     return c.json(new ApiError('Internal Server Error', 500), 500);
   }
 };
+
+export const likePost = async (c: Context): Promise<Response> => {
+  const postId = c.req.param('id');
+  const { id: userId } = c.get('user');
+
+  try {
+    const prisma = await initPrisma(c);
+    const existingLike = await prisma.like.findFirst({
+      where: { postId, userId },
+    });
+
+    if (existingLike) {
+      return c.json(new ApiResponse(null, 'Post already liked', 400), 400);
+    }
+
+    const like = await prisma.like.create({
+      data: { postId, userId },
+    });
+
+    return c.json(new ApiResponse(like, 'Post liked successfully', 201), 201);
+  } catch (error) {
+    console.error('Failed to like post:', error);
+    return c.json(new ApiError('Internal Server Error', 500), 500);
+  }
+};
+
+export const commentOnPost = async (c: Context): Promise<Response> => {
+  const postId = c.req.param('id');
+  const { id: userId } = c.get('user');
+  const body = await c.req.json();
+
+  try {
+    const prisma = await initPrisma(c);
+    const { content } = body;
+
+    if (!content) {
+      return c.json(new ApiResponse(null, 'Comment cannot be empty', 400), 400);
+    }
+
+    const comment = await prisma.comment.create({
+      data: {
+        postId,
+        userId,
+        content,
+      },
+    });
+
+    return c.json(
+      new ApiResponse(comment, 'Comment added successfully', 201),
+      201
+    );
+  } catch (error) {
+    console.error('Failed to add comment:', error);
+    return c.json(new ApiError('Internal Server Error', 500), 500);
+  }
+};
+
+export const bookmarkPost = async (c: Context): Promise<Response> => {
+  const postId = c.req.param('id');
+  const { id: userId } = c.get('user');
+
+  try {
+    const prisma = await initPrisma(c);
+    const existingBookmark = await prisma.bookmark.findFirst({
+      where: { postId, userId },
+    });
+
+    if (existingBookmark) {
+      return c.json(new ApiResponse(null, 'Post already bookmarked', 400), 400);
+    }
+
+    const bookmark = await prisma.bookmark.create({
+      data: { postId, userId },
+    });
+
+    return c.json(
+      new ApiResponse(bookmark, 'Post bookmarked successfully', 201),
+      201
+    );
+  } catch (error) {
+    console.error('Failed to bookmark post:', error);
+    return c.json(new ApiError('Internal Server Error', 500), 500);
+  }
+};
+
+export const removeBookmark = async (c: Context): Promise<Response> => {
+  const postId = c.req.param('id');
+  const { id: userId } = c.get('user');
+
+  try {
+    const prisma = await initPrisma(c);
+    const bookmark = await prisma.bookmark.findFirst({
+      where: { postId, userId },
+    });
+
+    if (!bookmark) {
+      return c.json(new ApiResponse(null, 'Bookmark not found', 404), 404);
+    }
+    await prisma.bookmark.delete({
+      where: { id: bookmark.id },
+    });
+
+    return c.json(
+      new ApiResponse(null, 'Bookmark removed successfully', 200),
+      200
+    );
+  } catch (error) {
+    console.error('Failed to remove bookmark:', error);
+    return c.json(new ApiError('Internal Server Error', 500), 500);
+  }
+};
