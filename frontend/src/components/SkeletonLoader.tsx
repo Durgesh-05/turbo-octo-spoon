@@ -5,7 +5,7 @@ export const BlogCardSkeleton = () => {
         <div className='flex-1'>
           <div className='flex gap-2 items-center'>
             <div className='inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-300 rounded-full'>
-              <span className='font-medium text-gray-900 text-xs'>DD</span>
+              <span className='font-medium text-gray-900 text-xs'></span>
             </div>
             <div className='h-5 bg-gray-300 rounded w-1/3'></div>
             <div className='h-4 bg-gray-300 rounded w-1/5'></div>

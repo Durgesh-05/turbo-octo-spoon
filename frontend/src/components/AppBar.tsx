@@ -3,8 +3,21 @@ import { IoCreateOutline } from 'react-icons/io5';
 
 import { Avatar } from './BlogCard';
 import { Link } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { authAtom } from '../store/atom';
+import { ChangeEvent } from 'react';
 
-export const AppBar = () => {
+export const AppBar = ({
+  onSearch,
+}: {
+  onSearch: (searchString: string) => void;
+}) => {
+  const authState = useRecoilValue(authAtom);
+
+  const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    onSearch(value);
+  };
   return (
     <div className='flex items-center justify-between py-1 px-4 bg-white shadow-md w-full'>
       <div className='flex items-center gap-4'>
@@ -19,6 +32,7 @@ export const AppBar = () => {
             type='text'
             placeholder='Search...'
             className=' rounded-lg p-2 focus:outline-none bg-gray-50'
+            onChange={searchHandler}
           />
         </div>
       </div>
@@ -31,7 +45,7 @@ export const AppBar = () => {
           <IoCreateOutline className='mr-2 text-2xl' />
           <span>Write</span>
         </Link>
-        <Avatar name='DD' />
+        <Avatar name={String(authState.user?.name)} />
       </div>
     </div>
   );

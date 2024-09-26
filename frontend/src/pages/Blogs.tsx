@@ -3,7 +3,7 @@ import { AppBar } from '../components/AppBar';
 import { BlogCard } from '../components/BlogCard';
 import { useBlogs } from '../hooks';
 import { BlogCardSkeleton } from '../components/SkeletonLoader';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { authAtom } from '../store/atom';
 
@@ -11,6 +11,7 @@ export const Blogs = () => {
   const { isLoading, blogs } = useBlogs();
   const navigate = useNavigate();
   const setAuthState = useSetRecoilState(authAtom);
+  const [filteredBlogs, setFilteredBlogs] = useState<any[]>([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -26,9 +27,26 @@ export const Blogs = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!isLoading) {
+      setFilteredBlogs(blogs);
+    }
+  }, [isLoading, blogs]);
+
+  const filteredSearch = (searchString: string) => {
+    if (searchString) {
+      const filtered = blogs.filter((blog: any) =>
+        blog.title.toLowerCase().includes(searchString.toLowerCase())
+      );
+      setFilteredBlogs(filtered);
+    } else {
+      setFilteredBlogs(blogs);
+    }
+  };
+
   return (
     <div className='flex flex-col items-center w-full px-4 md:px-0 gap-4'>
-      <AppBar />
+      <AppBar onSearch={filteredSearch} />
       {isLoading ? (
         <div className='flex flex-col w-full gap-4 justify-between mt-6'>
           <BlogCardSkeleton />
@@ -37,7 +55,7 @@ export const Blogs = () => {
           <BlogCardSkeleton />
         </div>
       ) : (
-        blogs.map((blog: any) => (
+        filteredBlogs.map((blog: any) => (
           <Link to={`/blog/${blog.id}`} key={blog.id}>
             <BlogCard
               name={blog.author.name}
