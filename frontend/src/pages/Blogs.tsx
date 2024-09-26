@@ -9,6 +9,7 @@ import { authAtom } from '../store/atom';
 
 export const Blogs = () => {
   const { isLoading, blogs } = useBlogs();
+
   const navigate = useNavigate();
   const setAuthState = useSetRecoilState(authAtom);
   const [filteredBlogs, setFilteredBlogs] = useState<any[]>([]);
@@ -58,6 +59,9 @@ export const Blogs = () => {
         filteredBlogs.map((blog: any) => (
           <Link to={`/blog/${blog.id}`} key={blog.id}>
             <BlogCard
+              like={blog.likes}
+              comment={blog.comments}
+              bookmark={blog.Bookmark}
               name={blog.author.name}
               title={blog.title}
               description={blog.description}

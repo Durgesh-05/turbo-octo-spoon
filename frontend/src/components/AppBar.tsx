@@ -7,11 +7,11 @@ import { useRecoilValue } from 'recoil';
 import { authAtom } from '../store/atom';
 import { ChangeEvent } from 'react';
 
-export const AppBar = ({
-  onSearch,
-}: {
+interface AppBarProps {
   onSearch: (searchString: string) => void;
-}) => {
+}
+
+export const AppBar = ({ onSearch }: AppBarProps) => {
   const authState = useRecoilValue(authAtom);
 
   const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -21,11 +21,13 @@ export const AppBar = ({
   return (
     <div className='flex items-center justify-between py-1 px-4 bg-white shadow-md w-full'>
       <div className='flex items-center gap-4'>
-        <img
-          src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQowM3PIgYobhX2HUBt4o4ce4s-zbrcMk7jBA&s'
-          alt='Logo'
-          className='h-16 w-full mr-3'
-        />
+        <Link to='/'>
+          <img
+            src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQowM3PIgYobhX2HUBt4o4ce4s-zbrcMk7jBA&s'
+            alt='Logo'
+            className='h-16 w-full mr-3'
+          />
+        </Link>
         <div className='flex justify-center items-center bg-gray-50'>
           <CiSearch />
           <input

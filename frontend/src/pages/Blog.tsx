@@ -14,15 +14,15 @@ import {
   FaComments,
 } from 'react-icons/fa';
 import { formattedTime } from '../api/utils';
+import { useRecoilValue } from 'recoil';
+import { authAtom } from '../store/atom';
 
 const Blog = () => {
   const { id } = useParams<{ id: string }>();
-  const [blog, setBlog] = useState<any>(null);
+  const [blog, setBlog] = useState<any>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isBookmarked, setBookmarked] = useState(false);
-  const [isHearted, setHearted] = useState(false);
-  const [isCommented, setCommented] = useState(false);
+  const authState = useRecoilValue(authAtom);
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -53,6 +53,78 @@ const Blog = () => {
     fetchBlog();
   }, [id]);
 
+  const handleBookmark = async () => {
+    const user: LoginDataProps = JSON.parse(
+      String(localStorage.getItem('user'))
+    );
+    if (!user) return;
+
+    try {
+      const res = await axios.post(
+        `${BACKEND_URL}/api/v1/blog/${id}/bookmark`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        console.log('Bookmarked');
+      }
+    } catch (e) {
+      console.error('Failed to bookmark blog', e);
+    }
+  };
+
+  const handleLike = async () => {
+    const user: LoginDataProps = JSON.parse(
+      String(localStorage.getItem('user'))
+    );
+    if (!user) return;
+
+    try {
+      const res = await axios.post(
+        `${BACKEND_URL}/api/v1/blog/${id}/like`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        }
+      );
+      if (res.status === 200) {
+        console.log('Liked');
+      }
+    } catch (e) {
+      console.error('Failed to like blog', e);
+    }
+  };
+
+  const handleComment = async () => {
+    const user: LoginDataProps = JSON.parse(
+      String(localStorage.getItem('user'))
+    );
+    if (!user) return;
+
+    try {
+      const res = await axios.post(
+        `${BACKEND_URL}/api/v1/blog/${id}/comment`,
+        { content: 'Great post!' },
+        {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        }
+      );
+      if (res.status === 201) {
+        console.log('Commented');
+      }
+    } catch (e) {
+      console.error('Failed to comment on blog', e);
+    }
+  };
+
   if (isLoading) {
     return <BlogDetailSkeleton />;
   }
@@ -61,9 +133,13 @@ const Blog = () => {
     return <div className='text-red-500'>{error}</div>;
   }
 
+  const handleSearch = (searchString: string) => {
+    console.log(searchString);
+  };
+
   return (
     <div className='flex flex-col items-center w-full px-4 md:px-0'>
-      <AppBar />
+      <AppBar onSearch={() => handleSearch('Test')} />
       <div className='flex flex-col w-full md:w-[55%] mx-auto gap-4 mt-6'>
         <h1 className='text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-950'>
           {blog?.title}
@@ -81,34 +157,61 @@ const Blog = () => {
         </p>
 
         <div className='flex gap-6 mt-6 justify-start'>
-          <div
-            className='cursor-pointer text-xl'
-            onClick={() => setBookmarked(!isBookmarked)}
-          >
-            {isBookmarked ? (
-              <FaBookmark className='text-blue-400' />
+          <div className='cursor-pointer text-xl' onClick={handleBookmark}>
+            {blog.Bookmark.some(
+              (props: any) => props.userId === authState.user?.id
+            ) ? (
+              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
+                <FaBookmark className='text-blue-400'></FaBookmark>
+                <span className='text-sm text-gray-400'>
+                  {blog.Bookmark.length}
+                </span>
+              </div>
             ) : (
-              <FaRegBookmark className='text-gray-400 hover:text-blue-400' />
+              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
+                <FaRegBookmark className='text-gray-400 hover:text-blue-400'></FaRegBookmark>
+                <span className='text-sm text-gray-400'>
+                  {blog.Bookmark.length}
+                </span>
+              </div>
             )}
           </div>
-          <div
-            className='cursor-pointer text-xl'
-            onClick={() => setHearted(!isHearted)}
-          >
-            {isHearted ? (
-              <FaHeart className='text-red-500' />
+          <div className='cursor-pointer text-xl' onClick={handleLike}>
+            {blog.likes.some(
+              (props: any) => props.userId === authState.user?.id
+            ) ? (
+              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
+                <FaHeart className='text-red-500'></FaHeart>
+                <span className='text-sm text-gray-400'>
+                  {blog.likes.length}
+                </span>
+              </div>
             ) : (
-              <FaRegHeart className='text-gray-400 hover:text-red-500' />
+              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
+                <FaRegHeart className='text-gray-400 hover:text-red-500'></FaRegHeart>
+                <span className='text-sm text-gray-400'>
+                  {blog.likes.length}
+                </span>
+              </div>
             )}
           </div>
-          <div
-            className='cursor-pointer text-xl'
-            onClick={() => setCommented(!isCommented)}
-          >
-            {isCommented ? (
-              <FaComments className='text-gray-800' />
+          <div className='cursor-pointer text-xl' onClick={handleComment}>
+            {blog.comments.some(
+              (props: any) => props.userId === authState.user?.id
+            ) ? (
+              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
+                <FaComments className='text-gray-800'></FaComments>
+                <span className='text-sm text-gray-400'>
+                  {blog.comments.length}
+                </span>
+              </div>
             ) : (
-              <FaRegComments className='text-gray-400' />
+              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
+                <FaRegComments className='text-gray-400'></FaRegComments>
+                <span className='text-sm text-gray-400'>
+                  {blog.comments.length}
+                </span>
+              </div>
             )}
           </div>
         </div>

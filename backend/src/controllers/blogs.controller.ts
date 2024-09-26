@@ -7,7 +7,14 @@ import { createBlogInput, updateBlogInput } from '@dragon_18/medium-common';
 export const getBlogs = async (c: Context): Promise<Response> => {
   try {
     const prisma = await initPrisma(c);
-    const blogs = await prisma.post.findMany({});
+    const blogs = await prisma.post.findMany({
+      include: {
+        author: { select: { name: true } },
+        likes: true,
+        comments: true,
+        Bookmark: true,
+      },
+    });
 
     return c.json(
       new ApiResponse(blogs, 'Blogs fetched successfully', 200),
@@ -106,6 +113,12 @@ export const getBlogById = async (c: Context): Promise<Response> => {
     const prisma = await initPrisma(c);
     const blog = await prisma.post.findUnique({
       where: { id },
+      include: {
+        author: { select: { name: true } },
+        likes: true,
+        comments: true,
+        Bookmark: true,
+      },
     });
 
     if (!blog) {

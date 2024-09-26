@@ -1,30 +1,25 @@
-import {
-  FaRegBookmark,
-  FaBookmark,
-  FaRegHeart,
-  FaHeart,
-  FaRegComments,
-  FaComments,
-} from 'react-icons/fa';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { formattedTime } from '../api/utils';
+import { FaBookmark, FaComments, FaHeart } from 'react-icons/fa';
 
 interface BlogCardProps {
   name: string;
   title: string;
   description: string;
   createdAt: string;
+  like: string[];
+  comment: string[];
+  bookmark: string[];
 }
 export const BlogCard = ({
   title,
   description,
   name,
   createdAt,
+  like,
+  comment,
+  bookmark,
 }: BlogCardProps) => {
-  const [isBookmarked, setBookmarked] = useState(false);
-  const [isHearted, setHearted] = useState(false);
-  const [isCommented, setCommented] = useState(false);
-
   return (
     <div className='flex flex-col w-full gap-4 justify-between mt-6 mx-auto px-4 md:px-0 md:w-[55%] '>
       <div className='flex flex-row w-full gap-4'>
@@ -48,35 +43,17 @@ export const BlogCard = ({
           </div>
 
           <div className='flex gap-6 mt-4 justify-start'>
-            <div
-              className='cursor-pointer text-xl '
-              onClick={() => setBookmarked(!isBookmarked)}
-            >
-              {isBookmarked ? (
-                <FaBookmark className='text-blue-400 ' />
-              ) : (
-                <FaRegBookmark className='text-gray-400 hover:text-blue-400' />
-              )}
+            <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
+              <FaBookmark className='text-gray-400'></FaBookmark>
+              <span className='text-sm text-gray-400'>{bookmark.length}</span>
             </div>
-            <div
-              className='cursor-pointer text-xl '
-              onClick={() => setHearted(!isHearted)}
-            >
-              {isHearted ? (
-                <FaHeart className='text-red-500' />
-              ) : (
-                <FaRegHeart className='text-gray-400 hover:text-red-500' />
-              )}
+            <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
+              <FaHeart className='text-gray-400'></FaHeart>
+              <span className='text-sm text-gray-400'>{like.length}</span>
             </div>
-            <div
-              className='cursor-pointer text-xl '
-              onClick={() => setCommented(!isCommented)}
-            >
-              {isCommented ? (
-                <FaComments className='text-gray-800' />
-              ) : (
-                <FaRegComments className='text-gray-400' />
-              )}
+            <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
+              <FaComments className='text-gray-400'></FaComments>
+              <span className='text-sm text-gray-400'>{comment.length}</span>
             </div>
           </div>
         </div>

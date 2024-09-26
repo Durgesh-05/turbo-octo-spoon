@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { Button, Input } from '../components';
 import { CreateBlogInput } from '@dragon_18/medium-common';
+import { createBlog } from '../api/blog';
+import { useNavigate } from 'react-router-dom';
 
-const CreateBlog: React.FC = () => {
+const CreateBlog = () => {
   const [blogData, setBlogData] = useState<CreateBlogInput>({
     title: '',
     description: '',
   });
+
+  const navigate = useNavigate();
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBlogData({ ...blogData, title: e.target.value });
@@ -17,9 +21,17 @@ const CreateBlog: React.FC = () => {
     setBlogData({ ...blogData, description: content });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(blogData);
+    const storedToken = localStorage.getItem('user');
+    if (storedToken) {
+      const createdBlogResponse = await createBlog(JSON.parse(storedToken), {
+        ...blogData,
+      });
+      if (createdBlogResponse != null) {
+        navigate('/');
+      }
+    }
   };
 
   return (
@@ -28,7 +40,10 @@ const CreateBlog: React.FC = () => {
         <h1 className='text-5xl font-extrabold text-center text-gray-800'>
           Create a New Blog
         </h1>
-        <form className='space-y-6' onSubmit={handleSubmit}>
+        <form
+          className='space-y-6'
+          onSubmit={(e: FormEvent<HTMLFormElement>) => handleSubmit(e)}
+        >
           <div>
             <Input
               type='text'
