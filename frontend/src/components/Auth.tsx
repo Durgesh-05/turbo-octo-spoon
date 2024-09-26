@@ -4,9 +4,12 @@ import { Input } from './Input';
 import { SignupInput, SigninInput } from '@dragon_18/medium-common';
 import { Link, useNavigate } from 'react-router-dom';
 import { userLogin, userRegistration } from '../api/auth';
+import { useSetRecoilState } from 'recoil';
+import { authAtom } from '../store/atom';
 
 export const Auth = ({ type }: { type: 'Login' | 'Register' }) => {
   const navigate = useNavigate();
+  const setAuthState = useSetRecoilState(authAtom);
   const [signupInput, setSignupInput] = useState<SignupInput>({
     name: '',
     email: '',
@@ -31,6 +34,7 @@ export const Auth = ({ type }: { type: 'Login' | 'Register' }) => {
   const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     //submit and check response based on type
+
     if (type === 'Register') {
       const registrationResponse = await userRegistration({ ...signupInput });
       if (registrationResponse != null) {
@@ -41,6 +45,10 @@ export const Auth = ({ type }: { type: 'Login' | 'Register' }) => {
     if (type === 'Login') {
       const loginResponse = await userLogin({ ...signinInput });
       if (loginResponse != null) {
+        setAuthState({
+          user: loginResponse,
+          isAuthenticated: true,
+        });
         localStorage.setItem('user', JSON.stringify(loginResponse));
         navigate('/');
       }

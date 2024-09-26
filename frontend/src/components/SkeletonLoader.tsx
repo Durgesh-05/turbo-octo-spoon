@@ -27,3 +27,23 @@ export const BlogCardSkeleton = () => {
     </div>
   );
 };
+
+export const BlogDetailSkeleton = () => {
+  return (
+    <div className='flex flex-col w-full md:w-[55%] mx-auto gap-4 mt-6'>
+      <div className='h-10 bg-gray-300 rounded animate-pulse'></div>
+      <div className='flex items-center gap-2 mb-4'>
+        <div className='h-6 w-1/4 bg-gray-300 rounded animate-pulse'></div>
+        <div className='h-4 w-1/6 bg-gray-300 rounded animate-pulse'></div>
+      </div>
+      <div className='h-6 w-full bg-gray-300 rounded animate-pulse mb-4'></div>
+      <div className='h-4 w-full bg-gray-300 rounded animate-pulse mb-2'></div>
+      <div className='h-4 w-full bg-gray-300 rounded animate-pulse mb-2'></div>
+      <div className='h-4 w-full bg-gray-300 rounded animate-pulse mb-2'></div>
+      <div className='h-4 w-full bg-gray-300 rounded animate-pulse mb-2'></div>
+      <div className='h-4 w-full bg-gray-300 rounded animate-pulse mb-2'></div>
+      <div className='h-4 w-full bg-gray-300 rounded animate-pulse mb-2'></div>
+      <div className='h-4 w-full bg-gray-300 rounded animate-pulse mb-2'></div>
+    </div>
+  );
+};

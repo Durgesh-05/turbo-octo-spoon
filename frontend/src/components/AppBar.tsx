@@ -2,6 +2,7 @@ import { CiSearch } from 'react-icons/ci';
 import { IoCreateOutline } from 'react-icons/io5';
 
 import { Avatar } from './BlogCard';
+import { Link } from 'react-router-dom';
 
 export const AppBar = () => {
   return (
@@ -23,10 +24,13 @@ export const AppBar = () => {
       </div>
 
       <div className='flex items-center justify-center gap-4 mr-4'>
-        <button className='flex items-center justify-center text-gray-400 mr-4 '>
+        <Link
+          className='flex items-center justify-center text-gray-400 mr-4 '
+          to={'/create'}
+        >
           <IoCreateOutline className='mr-2 text-2xl' />
           <span>Write</span>
-        </button>
+        </Link>
         <Avatar name='DD' />
       </div>
     </div>

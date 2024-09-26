@@ -1,13 +1,30 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AppBar } from '../components/AppBar';
 import { BlogCard } from '../components/BlogCard';
 import { useBlogs } from '../hooks';
 import { BlogCardSkeleton } from '../components/SkeletonLoader';
+import { useEffect } from 'react';
+import { useSetRecoilState } from 'recoil';
+import { authAtom } from '../store/atom';
 
 export const Blogs = () => {
   const { isLoading, blogs } = useBlogs();
-  console.log(isLoading);
-  console.log(blogs);
+  const navigate = useNavigate();
+  const setAuthState = useSetRecoilState(authAtom);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      if (!user.accessToken) {
+        navigate('/signin');
+      }
+      setAuthState({
+        user,
+        isAuthenticated: true,
+      });
+    }
+  }, []);
 
   return (
     <div className='flex flex-col items-center w-full px-4 md:px-0 gap-4'>

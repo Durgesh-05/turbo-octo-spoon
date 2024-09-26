@@ -6,7 +6,7 @@ import {
   FaRegComments,
   FaComments,
 } from 'react-icons/fa';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { formattedTime } from '../api/utils';
 
 interface BlogCardProps {
@@ -30,7 +30,7 @@ export const BlogCard = ({
       <div className='flex flex-row w-full gap-4'>
         <div className='flex-1'>
           <div className='flex gap-2 items-center'>
-            <Avatar name='DD' />
+            <Avatar name={name} />
             <p className='text-base md:text-lg font-normal text-gray-950'>
               {name}
             </p>
@@ -93,10 +93,18 @@ export const BlogCard = ({
 };
 
 export const Avatar = ({ name }: { name: string }) => {
+  const splitValue: string[] = name.split(' ');
+  const finalValue: string = useMemo(() => {
+    return splitValue
+      .map((word: string) => word.charAt(0).toUpperCase())
+      .join()
+      .replace(',', '');
+  }, [name, splitValue]);
+
   return (
     <div className=' inline-flex items-center justify-center w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-200'>
       <span className='font-medium text-gray-900 dark:text-gray-900 text-xs'>
-        {name}
+        {finalValue}
       </span>
     </div>
   );
