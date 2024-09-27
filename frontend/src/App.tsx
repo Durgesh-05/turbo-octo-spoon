@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
 import { Blog, Blogs, CreateBlog, Signin, Signup } from './pages';
 import { useSetRecoilState } from 'recoil';
@@ -11,6 +11,7 @@ import { BACKEND_URL } from './api/utils';
 const App = () => {
   const setBlogs = useSetRecoilState(blogAtom);
   const setIsLoading = useSetRecoilState(loadingAtom);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -19,6 +20,10 @@ const App = () => {
         const user: LoginDataProps = JSON.parse(
           String(localStorage.getItem('user'))
         );
+
+        if (!user.accessToken) {
+          return navigate('/signin');
+        }
         const res = await axios.get(`${BACKEND_URL}/api/v1/blog`, {
           headers: {
             Authorization: `Bearer ${user.accessToken}`,

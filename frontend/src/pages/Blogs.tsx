@@ -19,7 +19,7 @@ export const Blogs = () => {
     if (storedUser) {
       const user = JSON.parse(storedUser);
       if (!user.accessToken) {
-        navigate('/signin');
+        return navigate('/signin');
       }
       setAuthState({
         user,
