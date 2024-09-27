@@ -1,4 +1,4 @@
-export const BACKEND_URL = 'http://localhost:8787';
+export const BACKEND_URL = 'https://backend.durgesh-d1805.workers.dev';
 
 export const formattedTime = (time: string) => {
   const dateObject = new Date(time);
