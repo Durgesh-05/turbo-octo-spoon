@@ -1,15 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { AppBar } from '../components/AppBar';
 import { BlogCard } from '../components/BlogCard';
-import { useBlogs } from '../hooks';
 import { BlogCardSkeleton } from '../components/SkeletonLoader';
 import { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { authAtom } from '../store/atom';
 
-export const Blogs = () => {
-  const { isLoading, blogs } = useBlogs();
-
+export const Blogs = ({ isLoading, blogs }: any) => {
   const navigate = useNavigate();
   const setAuthState = useSetRecoilState(authAtom);
   const [filteredBlogs, setFilteredBlogs] = useState<any[]>([]);

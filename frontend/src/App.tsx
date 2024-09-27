@@ -4,12 +4,13 @@ import { Blog, Blogs, CreateBlog, Signin, Signup } from './pages';
 import { useSetRecoilState } from 'recoil';
 import { blogAtom, loadingAtom } from './store/atom';
 import { useEffect } from 'react';
-import { LoginDataProps } from './api/auth';
 import axios from 'axios';
 import { BACKEND_URL } from './api/utils';
+import { useBlogs } from './hooks';
 
 const App = () => {
   const setBlogs = useSetRecoilState(blogAtom);
+  const { isLoading, blogs } = useBlogs();
   const setIsLoading = useSetRecoilState(loadingAtom);
   const navigate = useNavigate();
 
@@ -17,16 +18,14 @@ const App = () => {
     const fetchBlogs = async () => {
       setIsLoading(true);
       try {
-        const user: LoginDataProps = JSON.parse(
-          String(localStorage.getItem('user'))
-        );
-
-        if (!user.accessToken) {
+        const user = localStorage.getItem('user');
+        if (!user) {
           return navigate('/signin');
         }
+
         const res = await axios.get(`${BACKEND_URL}/api/v1/blog`, {
           headers: {
-            Authorization: `Bearer ${user.accessToken}`,
+            Authorization: `Bearer ${JSON.parse(user).accessToken}`,
           },
         });
 
@@ -42,10 +41,10 @@ const App = () => {
     };
 
     fetchBlogs();
-  }, [setBlogs, setIsLoading]);
+  }, [setBlogs, setIsLoading, navigate]);
   return (
     <Routes>
-      <Route path='/' element={<Blogs />} />
+      <Route path='/' element={<Blogs isLoading={isLoading} blogs={blogs} />} />
       <Route path='/signup' element={<Signup />} />
       <Route path='/signin' element={<Signin />} />
       <Route path='/create' element={<CreateBlog />} />
