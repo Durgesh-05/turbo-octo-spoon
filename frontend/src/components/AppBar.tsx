@@ -3,17 +3,16 @@ import { IoCreateOutline } from 'react-icons/io5';
 
 import { Avatar } from './BlogCard';
 import { Link } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
-import { authAtom } from '../store/atom';
+import { AuthState } from '../store/atom';
 import { ChangeEvent } from 'react';
+import { Button } from './Button';
 
 interface AppBarProps {
   onSearch: (searchString: string) => void;
+  authState: AuthState;
 }
 
-export const AppBar = ({ onSearch }: AppBarProps) => {
-  const authState = useRecoilValue(authAtom);
-
+export const AppBar = ({ onSearch, authState }: AppBarProps) => {
   const searchHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     onSearch(value);
@@ -39,16 +38,22 @@ export const AppBar = ({ onSearch }: AppBarProps) => {
         </div>
       </div>
 
-      <div className='flex items-center justify-center gap-4 mr-4'>
-        <Link
-          className='flex items-center justify-center text-gray-400 mr-4 '
-          to={'/create'}
-        >
-          <IoCreateOutline className='mr-2 text-2xl' />
-          <span>Write</span>
+      {authState.isAuthenticated ? (
+        <div className='flex items-center justify-center gap-4 mr-4'>
+          <Link
+            className='flex items-center justify-center text-gray-400 mr-4 '
+            to={'/create'}
+          >
+            <IoCreateOutline className='mr-2 text-2xl' />
+            <span>Write</span>
+          </Link>
+          <Avatar name={String(authState.user?.name)} />
+        </div>
+      ) : (
+        <Link to={'/signin'}>
+          <Button type='button' text='Login' />
         </Link>
-        <Avatar name={String(authState.user?.name)} />
-      </div>
+      )}
     </div>
   );
 };

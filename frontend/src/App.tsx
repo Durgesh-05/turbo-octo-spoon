@@ -1,4 +1,4 @@
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import { Blog, Blogs, CreateBlog, Signin, Signup } from './pages';
 import { useSetRecoilState } from 'recoil';
@@ -12,23 +12,12 @@ const App = () => {
   const setBlogs = useSetRecoilState(blogAtom);
   const { isLoading, blogs } = useBlogs();
   const setIsLoading = useSetRecoilState(loadingAtom);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBlogs = async () => {
       setIsLoading(true);
       try {
-        const user = localStorage.getItem('user');
-        if (!user) {
-          return navigate('/signin');
-        }
-
-        const res = await axios.get(`${BACKEND_URL}/api/v1/blog`, {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(user).accessToken}`,
-          },
-        });
-
+        const res = await axios.get(`${BACKEND_URL}/api/v1/blog`);
         if (res.status === 200) {
           const { data } = res.data;
           setBlogs(data);
@@ -41,7 +30,7 @@ const App = () => {
     };
 
     fetchBlogs();
-  }, [setBlogs, setIsLoading, navigate]);
+  }, [setBlogs, setIsLoading]);
   return (
     <Routes>
       <Route path='/' element={<Blogs isLoading={isLoading} blogs={blogs} />} />

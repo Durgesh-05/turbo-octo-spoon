@@ -1,14 +1,13 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AppBar } from '../components/AppBar';
 import { BlogCard } from '../components/BlogCard';
 import { BlogCardSkeleton } from '../components/SkeletonLoader';
 import { useEffect, useState } from 'react';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { authAtom } from '../store/atom';
 
 export const Blogs = ({ isLoading, blogs }: any) => {
-  const navigate = useNavigate();
-  const setAuthState = useSetRecoilState(authAtom);
+  const [authState, setAuthState] = useRecoilState(authAtom);
   const [filteredBlogs, setFilteredBlogs] = useState<any[]>([]);
 
   useEffect(() => {
@@ -16,7 +15,10 @@ export const Blogs = ({ isLoading, blogs }: any) => {
     if (storedUser) {
       const user = JSON.parse(storedUser);
       if (!user.accessToken) {
-        return navigate('/signin');
+        setAuthState({
+          user: null,
+          isAuthenticated: false,
+        });
       }
       setAuthState({
         user,
@@ -44,7 +46,7 @@ export const Blogs = ({ isLoading, blogs }: any) => {
 
   return (
     <div className='flex flex-col items-center w-full px-4 md:px-0 gap-4'>
-      <AppBar onSearch={filteredSearch} />
+      <AppBar onSearch={filteredSearch} authState={authState} />
       {isLoading ? (
         <div className='flex flex-col w-full gap-4 justify-between mt-6'>
           <BlogCardSkeleton />

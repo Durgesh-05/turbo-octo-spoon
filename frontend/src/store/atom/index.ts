@@ -1,7 +1,7 @@
 import { atom } from 'recoil';
 import { LoginDataProps } from '../../api/auth';
 
-interface AuthState {
+export interface AuthState {
   user: LoginDataProps | null;
   isAuthenticated: boolean;
 }

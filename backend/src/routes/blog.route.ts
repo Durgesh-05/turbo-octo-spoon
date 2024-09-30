@@ -17,7 +17,7 @@ const blogRouter = new Hono<{
 
 blogRouter.post('/', vaildateToken, addBlogs);
 blogRouter.put('/:id', vaildateToken, updateBlogs);
-blogRouter.get('/', vaildateToken, getBlogs);
+blogRouter.get('/', getBlogs);
 blogRouter.get('/:id', vaildateToken, getBlogById);
 blogRouter.post('/:id/like', vaildateToken, likePost);
 blogRouter.post('/:id/comment', vaildateToken, commentOnPost);
