@@ -4,6 +4,7 @@ import { vaildateToken } from '../middlewares/auth';
 import {
   bookmarkPost,
   commentOnPost,
+  getCommentsForPost,
   likePost,
   removeBookmark,
 } from '../controllers/blogs.controller';
@@ -21,6 +22,7 @@ blogRouter.get('/', getBlogs);
 blogRouter.get('/:id', vaildateToken, getBlogById);
 blogRouter.post('/:id/like', vaildateToken, likePost);
 blogRouter.post('/:id/comment', vaildateToken, commentOnPost);
+blogRouter.get('/:id/comment', getCommentsForPost);
 blogRouter.post('/:id/bookmark', vaildateToken, bookmarkPost);
 blogRouter.delete('/:id/bookmark', vaildateToken, removeBookmark);
 

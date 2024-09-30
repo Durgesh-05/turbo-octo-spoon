@@ -242,3 +242,29 @@ export const removeBookmark = async (c: Context): Promise<Response> => {
     return c.json(new ApiError('Internal Server Error', 500), 500);
   }
 };
+
+export const getCommentsForPost = async (c: Context): Promise<Response> => {
+  const postId = c.req.param('id');
+
+  try {
+    const prisma = await initPrisma(c);
+    const comments = await prisma.comment.findMany({
+      where: { postId },
+      include: {
+        user: { select: { name: true } },
+      },
+    });
+
+    if (!comments || comments.length === 0) {
+      return c.json(new ApiResponse([], 'No comments found', 404), 404);
+    }
+
+    return c.json(
+      new ApiResponse(comments, 'Comments fetched successfully', 200),
+      200
+    );
+  } catch (error) {
+    console.error('Failed to fetch comments:', error);
+    return c.json(new ApiError('Internal Server Error', 500), 500);
+  }
+};

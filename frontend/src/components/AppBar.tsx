@@ -17,43 +17,47 @@ export const AppBar = ({ onSearch, authState }: AppBarProps) => {
     const value = e.target.value;
     onSearch(value);
   };
+
   return (
-    <div className='flex items-center justify-between py-1 px-4 bg-white shadow-md w-full'>
+    <div className='flex  items-center justify-between py-2 px-4 bg-white shadow-md w-full'>
       <div className='flex items-center gap-4'>
         <Link to='/'>
           <img
             src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQowM3PIgYobhX2HUBt4o4ce4s-zbrcMk7jBA&s'
             alt='Logo'
-            className='h-16 w-full mr-3'
+            className='h-[40px] md:h-[50px] w-auto'
           />
         </Link>
-        <div className='flex justify-center items-center bg-gray-50'>
-          <CiSearch />
+        <div className='hidden md:flex items-center bg-gray-50 p-2 rounded-lg'>
+          <CiSearch className='text-gray-400' />
           <input
             type='text'
             placeholder='Search...'
-            className=' rounded-lg p-2 focus:outline-none bg-gray-50'
+            className='ml-2 p-1 focus:outline-none bg-gray-50'
             onChange={searchHandler}
           />
         </div>
       </div>
 
-      {authState.isAuthenticated ? (
-        <div className='flex items-center justify-center gap-4 mr-4'>
-          <Link
-            className='flex items-center justify-center text-gray-400 mr-4 '
-            to={'/create'}
-          >
-            <IoCreateOutline className='mr-2 text-2xl' />
-            <span>Write</span>
+      <div className='flex items-center gap-4 mt-2 md:mt-0'>
+        {/* <div className='flex items-center justify-center md:hidden'>
+          <CiSearch className='text-xl text-gray-400' />
+        </div> */}
+
+        {authState.isAuthenticated ? (
+          <div className='flex items-center justify-center gap-4'>
+            <Link className='flex items-center text-gray-400' to={'/create'}>
+              <IoCreateOutline className='text-2xl' />
+              <span className='hidden md:inline-block ml-2'>Write</span>
+            </Link>
+            <Avatar name={String(authState.user?.name)} />
+          </div>
+        ) : (
+          <Link to={'/signin'}>
+            <Button type='button' text='Login' className='w-full md:w-auto' />
           </Link>
-          <Avatar name={String(authState.user?.name)} />
-        </div>
-      ) : (
-        <Link to={'/signin'}>
-          <Button type='button' text='Login' />
-        </Link>
-      )}
+        )}
+      </div>
     </div>
   );
 };

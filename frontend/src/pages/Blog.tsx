@@ -1,10 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { BACKEND_URL } from '../api/utils';
-import { LoginDataProps } from '../api/auth';
-import { AppBar } from '../components/AppBar';
-import { BlogDetailSkeleton } from '../components/SkeletonLoader';
+import { useState, useEffect } from 'react';
 import {
   FaRegBookmark,
   FaBookmark,
@@ -13,16 +8,50 @@ import {
   FaRegComments,
   FaComments,
 } from 'react-icons/fa';
-import { formattedTime } from '../api/utils';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
+import { LoginDataProps } from '../api/auth';
+import { BACKEND_URL, formattedTime } from '../api/utils';
+import { AppBar } from '../components/AppBar';
+import { BlogDetailSkeleton } from '../components/SkeletonLoader';
 import { authAtom } from '../store/atom';
+import CommentSection from '../components/CommentCard';
+
+interface IconButtonProps {
+  icon: any;
+  activeIcon: any;
+  count: number;
+  isActive: boolean;
+  onClick: () => void;
+}
+const IconButton = ({
+  icon,
+  activeIcon,
+  count,
+  isActive,
+  onClick,
+}: IconButtonProps) => (
+  <div
+    className='cursor-pointer text-xl flex gap-2 justify-center items-center'
+    onClick={onClick}
+  >
+    {isActive ? activeIcon : icon}
+    <span className='text-sm text-gray-400'>{count}</span>
+  </div>
+);
 
 const Blog = () => {
   const { id } = useParams<{ id: string }>();
   const [blog, setBlog] = useState<any>({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [likes, setLikes] = useState<number>(0);
+  const [bookmarks, setBookmarks] = useState<number>(0);
+  const [comments, setComments] = useState<number>(0);
+  const [hasLiked, setHasLiked] = useState<boolean>(false);
+  const [hasBookmarked, setHasBookmarked] = useState<boolean>(false);
   const authState = useRecoilValue(authAtom);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -31,97 +60,61 @@ const Blog = () => {
         const user: LoginDataProps = JSON.parse(
           String(localStorage.getItem('user'))
         );
+        if (!user) {
+          return navigate('/signin');
+        }
         const res = await axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
+          headers: { Authorization: `Bearer ${user.accessToken}` },
         });
-
         if (res.status === 200) {
           setBlog(res.data.data);
+          setLikes(res.data.data.likes.length);
+          setBookmarks(res.data.data.Bookmark.length);
+          setComments(res.data.data.comments.length);
+          setHasLiked(
+            res.data.data.likes.some(
+              (like: any) => like.userId === authState.user?.id
+            )
+          );
+          setHasBookmarked(
+            res.data.data.Bookmark.some(
+              (bookmark: any) => bookmark.userId === authState.user?.id
+            )
+          );
         } else {
           setError('Blog not found');
         }
       } catch (e) {
-        console.error('Failed to fetch blog by ID: ', e);
         setError('Failed to fetch blog');
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchBlog();
-  }, [id]);
+  }, [id, navigate]);
 
-  const handleBookmark = async () => {
+  const handleAction = async (type: string, apiUrl: string) => {
     const user: LoginDataProps = JSON.parse(
       String(localStorage.getItem('user'))
     );
     if (!user) return;
-
     try {
-      const res = await axios.post(
-        `${BACKEND_URL}/api/v1/blog/${id}/bookmark`,
+      await axios.post(
+        apiUrl,
         {},
-        {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${user.accessToken}` } }
       );
-      if (res.status === 200) {
-        console.log('Bookmarked');
+      if (type === 'like') {
+        setLikes((prev) => (hasLiked ? prev - 1 : prev + 1));
+        setHasLiked((prev) => !prev);
       }
-    } catch (e) {
-      console.error('Failed to bookmark blog', e);
-    }
-  };
-
-  const handleLike = async () => {
-    const user: LoginDataProps = JSON.parse(
-      String(localStorage.getItem('user'))
-    );
-    if (!user) return;
-
-    try {
-      const res = await axios.post(
-        `${BACKEND_URL}/api/v1/blog/${id}/like`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-        }
-      );
-      if (res.status === 200) {
-        console.log('Liked');
+      if (type === 'bookmark') {
+        setBookmarks((prev) => (hasBookmarked ? prev - 1 : prev + 1));
+        setHasBookmarked((prev) => !prev);
       }
+      if (type === 'comment') setComments((prev) => prev + 1);
     } catch (e) {
-      console.error('Failed to like blog', e);
-    }
-  };
-
-  const handleComment = async () => {
-    const user: LoginDataProps = JSON.parse(
-      String(localStorage.getItem('user'))
-    );
-    if (!user) return;
-
-    try {
-      const res = await axios.post(
-        `${BACKEND_URL}/api/v1/blog/${id}/comment`,
-        { content: 'Great post!' },
-        {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-        }
-      );
-      if (res.status === 201) {
-        console.log('Commented');
-      }
-    } catch (e) {
-      console.error('Failed to comment on blog', e);
+      console.error(`Failed to ${type} blog`, e);
     }
   };
 
@@ -133,13 +126,9 @@ const Blog = () => {
     return <div className='text-red-500'>{error}</div>;
   }
 
-  const handleSearch = (searchString: string) => {
-    console.log(searchString);
-  };
-
   return (
     <div className='flex flex-col items-center w-full px-4 md:px-0'>
-      <AppBar onSearch={() => handleSearch('Test')} />
+      <AppBar onSearch={() => {}} authState={authState} />
       <div className='flex flex-col w-full md:w-[55%] mx-auto gap-4 mt-6'>
         <h1 className='text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-950'>
           {blog?.title}
@@ -157,64 +146,45 @@ const Blog = () => {
         </p>
 
         <div className='flex gap-6 mt-6 justify-start'>
-          <div className='cursor-pointer text-xl' onClick={handleBookmark}>
-            {blog.Bookmark.some(
-              (props: any) => props.userId === authState.user?.id
-            ) ? (
-              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
-                <FaBookmark className='text-blue-400'></FaBookmark>
-                <span className='text-sm text-gray-400'>
-                  {blog.Bookmark.length}
-                </span>
-              </div>
-            ) : (
-              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
-                <FaRegBookmark className='text-gray-400 hover:text-blue-400'></FaRegBookmark>
-                <span className='text-sm text-gray-400'>
-                  {blog.Bookmark.length}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className='cursor-pointer text-xl' onClick={handleLike}>
-            {blog.likes.some(
-              (props: any) => props.userId === authState.user?.id
-            ) ? (
-              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
-                <FaHeart className='text-red-500'></FaHeart>
-                <span className='text-sm text-gray-400'>
-                  {blog.likes.length}
-                </span>
-              </div>
-            ) : (
-              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
-                <FaRegHeart className='text-gray-400 hover:text-red-500'></FaRegHeart>
-                <span className='text-sm text-gray-400'>
-                  {blog.likes.length}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className='cursor-pointer text-xl' onClick={handleComment}>
-            {blog.comments.some(
-              (props: any) => props.userId === authState.user?.id
-            ) ? (
-              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
-                <FaComments className='text-gray-800'></FaComments>
-                <span className='text-sm text-gray-400'>
-                  {blog.comments.length}
-                </span>
-              </div>
-            ) : (
-              <div className='cursor-pointer text-xl flex gap-2 justify-center items-center'>
-                <FaRegComments className='text-gray-400'></FaRegComments>
-                <span className='text-sm text-gray-400'>
-                  {blog.comments.length}
-                </span>
-              </div>
-            )}
-          </div>
+          <IconButton
+            icon={
+              <FaRegBookmark className='text-gray-400 hover:text-blue-400' />
+            }
+            activeIcon={<FaBookmark className='text-blue-400' />}
+            count={bookmarks}
+            isActive={hasBookmarked}
+            onClick={() =>
+              handleAction(
+                'bookmark',
+                `${BACKEND_URL}/api/v1/blog/${id}/bookmark`
+              )
+            }
+          />
+          <IconButton
+            icon={<FaRegHeart className='text-gray-400 hover:text-red-500' />}
+            activeIcon={<FaHeart className='text-red-500' />}
+            count={likes}
+            isActive={hasLiked}
+            onClick={() =>
+              handleAction('like', `${BACKEND_URL}/api/v1/blog/${id}/like`)
+            }
+          />
+          <IconButton
+            icon={<FaRegComments className='text-gray-400' />}
+            activeIcon={<FaComments className='text-gray-800' />}
+            count={comments}
+            isActive={false}
+            onClick={() =>
+              handleAction(
+                'comment',
+                `${BACKEND_URL}/api/v1/blog/${id}/comment`
+              )
+            }
+          />
         </div>
+
+        {/* Comment Section */}
+        <CommentSection blogId={id!} />
       </div>
     </div>
   );

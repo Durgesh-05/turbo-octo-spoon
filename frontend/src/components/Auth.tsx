@@ -10,6 +10,7 @@ import { authAtom } from '../store/atom';
 export const Auth = ({ type }: { type: 'Login' | 'Register' }) => {
   const navigate = useNavigate();
   const setAuthState = useSetRecoilState(authAtom);
+  const [loading, setLoading] = useState(false);
   const [signupInput, setSignupInput] = useState<SignupInput>({
     name: '',
     email: '',
@@ -33,25 +34,29 @@ export const Auth = ({ type }: { type: 'Login' | 'Register' }) => {
 
   const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //submit and check response based on type
+    setLoading(true);
 
-    if (type === 'Register') {
-      const registrationResponse = await userRegistration({ ...signupInput });
-      if (registrationResponse != null) {
-        navigate('/signin');
+    try {
+      if (type === 'Register') {
+        const registrationResponse = await userRegistration({ ...signupInput });
+        if (registrationResponse) {
+          navigate('/signin');
+        }
+      } else if (type === 'Login') {
+        const loginResponse = await userLogin({ ...signinInput });
+        if (loginResponse) {
+          setAuthState({
+            user: loginResponse,
+            isAuthenticated: true,
+          });
+          localStorage.setItem('user', JSON.stringify(loginResponse));
+          navigate('/');
+        }
       }
-    }
-
-    if (type === 'Login') {
-      const loginResponse = await userLogin({ ...signinInput });
-      if (loginResponse != null) {
-        setAuthState({
-          user: loginResponse,
-          isAuthenticated: true,
-        });
-        localStorage.setItem('user', JSON.stringify(loginResponse));
-        navigate('/');
-      }
+    } catch (error) {
+      console.error('Error during authentication:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,9 +123,16 @@ export const Auth = ({ type }: { type: 'Login' | 'Register' }) => {
             }
           />
           <Button
-            text={type === 'Register' ? 'Sign Up' : 'Sign In'}
+            text={
+              loading
+                ? 'Loading...'
+                : type === 'Register'
+                ? 'Sign Up'
+                : 'Sign In'
+            }
             type='submit'
             className='mt-4'
+            disabled={loading}
           />
         </form>
       </div>
