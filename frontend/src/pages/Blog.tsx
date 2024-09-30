@@ -57,30 +57,25 @@ const Blog = () => {
     const fetchBlog = async () => {
       setIsLoading(true);
       try {
-        const user: LoginDataProps = JSON.parse(
-          String(localStorage.getItem('user'))
-        );
-        if (!user) {
-          return navigate('/signin');
-        }
-        const res = await axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
-          headers: { Authorization: `Bearer ${user.accessToken}` },
-        });
+        const res = await axios.get(`${BACKEND_URL}/api/v1/blog/${id}`);
         if (res.status === 200) {
           setBlog(res.data.data);
           setLikes(res.data.data.likes.length);
           setBookmarks(res.data.data.Bookmark.length);
           setComments(res.data.data.comments.length);
-          setHasLiked(
-            res.data.data.likes.some(
-              (like: any) => like.userId === authState.user?.id
-            )
-          );
-          setHasBookmarked(
-            res.data.data.Bookmark.some(
-              (bookmark: any) => bookmark.userId === authState.user?.id
-            )
-          );
+          // Check if the user is authenticated to set like/bookmark state
+          if (authState.isAuthenticated) {
+            setHasLiked(
+              res.data.data.likes.some(
+                (like: any) => like.userId === authState.user?.id
+              )
+            );
+            setHasBookmarked(
+              res.data.data.Bookmark.some(
+                (bookmark: any) => bookmark.userId === authState.user?.id
+              )
+            );
+          }
         } else {
           setError('Blog not found');
         }
@@ -91,13 +86,15 @@ const Blog = () => {
       }
     };
     fetchBlog();
-  }, [id, navigate]);
+  }, [id, authState]);
 
   const handleAction = async (type: string, apiUrl: string) => {
     const user: LoginDataProps = JSON.parse(
       String(localStorage.getItem('user'))
     );
-    if (!user) return;
+    if (!user) {
+      return navigate('/signin');
+    }
     try {
       await axios.post(
         apiUrl,
@@ -184,7 +181,7 @@ const Blog = () => {
         </div>
 
         {/* Comment Section */}
-        <CommentSection blogId={id!} />
+        <CommentSection blogId={id!} authState={authState} />
       </div>
     </div>
   );
