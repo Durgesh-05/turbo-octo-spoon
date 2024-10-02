@@ -1,13 +1,20 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import { Blog, Blogs, CreateBlog, Signin, Signup } from './pages';
+import {
+  Blog,
+  Blogs,
+  CreateBlog,
+  NotFound,
+  Profile,
+  Signin,
+  Signup,
+} from './pages';
 import { useSetRecoilState } from 'recoil';
 import { blogAtom, loadingAtom } from './store/atom';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from './api/utils';
 import { useBlogs } from './hooks';
-import { NotFound } from './pages/NotFound';
 
 const App = () => {
   const setBlogs = useSetRecoilState(blogAtom);
@@ -39,6 +46,7 @@ const App = () => {
       <Route path='/signin' element={<Signin />} />
       <Route path='/create' element={<CreateBlog />} />
       <Route path='/blog/:id' element={<Blog />} />
+      <Route path='/profile' element={<Profile />} />
       <Route path='*' element={<NotFound />} />
     </Routes>
   );

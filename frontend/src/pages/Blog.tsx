@@ -12,10 +12,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { LoginDataProps } from '../api/auth';
 import { BACKEND_URL, formattedTime } from '../api/utils';
-import { AppBar } from '../components/AppBar';
-import { BlogDetailSkeleton } from '../components/SkeletonLoader';
 import { authAtom } from '../store/atom';
-import CommentSection from '../components/CommentCard';
+import { BlogDetailSkeleton, AppBar, CommentSection } from '../components';
 
 interface IconButtonProps {
   icon: any;

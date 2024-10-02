@@ -39,7 +39,6 @@ const CommentSection = ({
         const response = await axios.get(
           `${BACKEND_URL}/api/v1/blog/${blogId}/comment`
         );
-        console.log(response.data.data);
 
         setComments(response.data.data);
       } catch (error) {
@@ -80,7 +79,7 @@ const CommentSection = ({
             />
             <button
               onClick={handleCommentSubmit}
-              className='mt-2 px-4 py-2 bg-blue-500 text-white rounded'
+              className='mt-2 px-4 py-2 bg-gray-950 text-white rounded'
             >
               Submit
             </button>

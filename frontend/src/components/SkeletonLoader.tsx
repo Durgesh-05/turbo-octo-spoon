@@ -47,3 +47,61 @@ export const BlogDetailSkeleton = () => {
     </div>
   );
 };
+
+export const ProfileSkeleton = () => {
+  return (
+    <div className='min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6'>
+      <div className='bg-white shadow-lg rounded-lg p-6 w-full max-w-3xl animate-pulse'>
+        <div className='flex items-center space-x-4'>
+          <div className='w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold text-gray-300'></div>
+          <div>
+            <h2 className='text-2xl font-semibold text-gray-300 h-6 w-48'></h2>
+            <p className='text-gray-300 h-4 w-24'></p>
+          </div>
+        </div>
+        <div className='mt-6'>
+          <h3 className='text-xl font-semibold text-gray-800'>Bookmarks</h3>
+          <ul className='mt-2 space-y-2'>
+            {[1, 2, 3].map((_, index) => (
+              <li
+                key={index}
+                className='bg-gray-100 p-3 rounded-lg shadow hover:bg-gray-200 transition duration-200 animate-pulse'
+              >
+                <p className='text-gray-300 h-4 w-48'></p>
+                <p className='text-gray-300 h-4 w-48'></p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className='mt-6'>
+          <h3 className='text-xl font-semibold text-gray-800'>Liked Posts</h3>
+          <ul className='mt-2 space-y-2'>
+            {[1, 2, 3].map((_, index) => (
+              <li
+                key={index}
+                className='bg-gray-100 p-3 rounded-lg shadow hover:bg-gray-200 transition duration-200 animate-pulse'
+              >
+                <p className='text-gray-300 h-4 w-48'></p>
+                <p className='text-gray-300 h-4 w-48'></p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className='mt-6'>
+          <h3 className='text-xl font-semibold text-gray-800'>Comments</h3>
+          <ul className='mt-2 space-y-2'>
+            {[1, 2, 3].map((_, index) => (
+              <li
+                key={index}
+                className='bg-gray-100 p-3 rounded-lg shadow hover:bg-gray-200 transition duration-200 animate-pulse'
+              >
+                <p className='text-gray-300 h-4 w-48'></p>
+                <span className='text-gray-300 h-4 w-24'></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};

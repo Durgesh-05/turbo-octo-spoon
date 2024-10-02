@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom';
-import { AppBar } from '../components/AppBar';
-import { BlogCard } from '../components/BlogCard';
-import { BlogCardSkeleton } from '../components/SkeletonLoader';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { authAtom } from '../store/atom';
+import { AppBar, BlogCardSkeleton, BlogCard } from '../components';
 
 export const Blogs = ({ isLoading, blogs }: any) => {
   const [authState, setAuthState] = useRecoilState(authAtom);

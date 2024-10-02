@@ -52,3 +52,22 @@ export const userLogin = async ({
     return null;
   }
 };
+
+export const userProfile = async (
+  user: LoginDataProps
+): Promise<object | null> => {
+  try {
+    const res = await axios.get(`${BACKEND_URL}/api/v1/user/profile`, {
+      headers: {
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+    });
+    if (res.status === 200) {
+      return res.data.data;
+    }
+    return null;
+  } catch (e) {
+    console.error('Failed to create blog', e);
+    return null;
+  }
+};
