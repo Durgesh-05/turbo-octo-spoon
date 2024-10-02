@@ -1,4 +1,4 @@
-import { userSignin, userSignup } from './user.controller';
+import { userSignin, userSignup, userProfile } from './user.controller';
 import {
   getBlogById,
   getBlogs,
@@ -6,4 +6,12 @@ import {
   updateBlogs,
 } from './blogs.controller';
 
-export { userSignin, userSignup, getBlogById, getBlogs, addBlogs, updateBlogs };
+export {
+  userSignin,
+  userSignup,
+  getBlogById,
+  getBlogs,
+  addBlogs,
+  updateBlogs,
+  userProfile,
+};

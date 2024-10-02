@@ -1,8 +1,6 @@
 import { Hono } from 'hono';
-import { userSignin, userSignup } from '../controllers';
+import { userProfile, userSignin, userSignup } from '../controllers';
 import { vaildateToken } from '../middlewares/auth';
-import { userProfile } from '../controllers/user.controller';
-
 const userRouter = new Hono<{
   Bindings: {
     DATABASE_URL: string;

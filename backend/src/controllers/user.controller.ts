@@ -127,9 +127,21 @@ export const userProfile = async (c: Context): Promise<Response> => {
         id: true,
         name: true,
         email: true,
-        Bookmark: true,
-        likedPost: true,
-        commentedPost: true,
+        Bookmark: {
+          include: {
+            post: true,
+          },
+        },
+        likedPost: {
+          include: {
+            post: true,
+          },
+        },
+        commentedPost: {
+          include: {
+            post: true,
+          },
+        },
         posts: true,
       },
     });
