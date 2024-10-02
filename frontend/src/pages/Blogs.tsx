@@ -1,30 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
-import { authAtom } from '../store/atom';
 import { AppBar, BlogCardSkeleton, BlogCard } from '../components';
 
-export const Blogs = ({ isLoading, blogs }: any) => {
-  const [authState, setAuthState] = useRecoilState(authAtom);
+export const Blogs = ({ isLoading, blogs, authState }: any) => {
   const [filteredBlogs, setFilteredBlogs] = useState<any[]>([]);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      if (!user.accessToken) {
-        setAuthState({
-          user: null,
-          isAuthenticated: false,
-        });
-      }
-      setAuthState({
-        user,
-        isAuthenticated: true,
-      });
-    }
-  }, []);
-
   useEffect(() => {
     if (!isLoading) {
       setFilteredBlogs(blogs);
