@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from './api/utils';
 import { useBlogs } from './hooks';
+import { NotFound } from './pages/NotFound';
 
 const App = () => {
   const setBlogs = useSetRecoilState(blogAtom);
@@ -38,6 +39,7 @@ const App = () => {
       <Route path='/signin' element={<Signin />} />
       <Route path='/create' element={<CreateBlog />} />
       <Route path='/blog/:id' element={<Blog />} />
+      <Route path='*' element={<NotFound />} />
     </Routes>
   );
 };
