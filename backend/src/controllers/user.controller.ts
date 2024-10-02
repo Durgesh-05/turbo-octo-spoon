@@ -114,3 +114,32 @@ export const userSignin = async (c: Context): Promise<Response> => {
     return c.json(new ApiError('Internal Server Error', 500), 500);
   }
 };
+
+export const userProfile = async (c: Context): Promise<Response> => {
+  const prisma = await initPrisma(c);
+  const { id } = c.get('user');
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        Bookmark: true,
+        likedPost: true,
+        commentedPost: true,
+        posts: true,
+      },
+    });
+
+    return c.json(
+      new ApiResponse(user, 'Profile Fetched SuccessFully', 200),
+      200
+    );
+  } catch (e) {
+    console.error('Failed to fetch profile Error: ', e);
+    return c.json(new ApiError('Internal Server Error', 500), 500);
+  }
+};
